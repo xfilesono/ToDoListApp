@@ -28,5 +28,5 @@ bin/
 ### Mac OS ###
 .DS_Store
 
-### Env file###
-.env
+### Env file ###
+src/.env
