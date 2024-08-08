@@ -25,7 +25,7 @@ public class ToDoItemDAO {
 
     public List<ToDoItem> getUnfinishedItems() throws SQLException {
         List<ToDoItem> items = new ArrayList<>();
-        String query = "SELECT * FROM tasks WHERE done = false";
+        String query = "SELECT * FROM tasks WHERE done = false AND isDeleted = false";
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
@@ -37,11 +37,13 @@ public class ToDoItemDAO {
                 item.setWhosFor(rs.getString("whos_for"));
                 item.setDone(rs.getBoolean("done"));
                 item.setLastModifiedDate(rs.getTimestamp("last_modified_date").toLocalDateTime());
+                item.setDeleted(rs.getBoolean("isDeleted"));
                 items.add(item);
             }
         }
         return items;
     }
+
 
     public List<ToDoItem> getFinishedItems() throws SQLException {
         List<ToDoItem> items = new ArrayList<>();
@@ -118,5 +120,35 @@ public class ToDoItemDAO {
             }
         }
         return null; // Return null if no item is found
+    }
+
+    public List<ToDoItem> getArchivedItems() throws SQLException {
+        List<ToDoItem> items = new ArrayList<>();
+        String query = "SELECT * FROM tasks WHERE done = true OR isDeleted = true";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            while (rs.next()) {
+                ToDoItem item = new ToDoItem();
+                item.setId(rs.getInt("id"));
+                item.setPrioritise(rs.getInt("prioritise"));
+                item.setDescription(rs.getString("description"));
+                item.setWhosFor(rs.getString("whos_for"));
+                item.setDone(rs.getBoolean("done"));
+                item.setLastModifiedDate(rs.getTimestamp("last_modified_date").toLocalDateTime());
+                item.setDeleted(rs.getBoolean("isDeleted"));
+                items.add(item);
+            }
+        }
+        return items;
+    }
+
+    public void markItemAsDeleted(int id) throws SQLException {
+        String query = "UPDATE tasks SET isDeleted = true WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
+        }
     }
 }

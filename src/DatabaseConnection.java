@@ -12,6 +12,7 @@ public class DatabaseConnection {
     private static final String PASSWORD = dotenv.get("DB_PASSWORD");
 
     public static Connection getConnection() throws SQLException {
+        assert URL != null;
         return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }

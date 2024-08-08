@@ -9,9 +9,11 @@ import javafx.stage.Modality;
 import javafx.scene.layout.GridPane;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.util.Callback; // Import the Callback class
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ToDoApp extends Application {
@@ -40,6 +42,26 @@ public class ToDoApp extends Application {
 
         TableColumn<ToDoItem, LocalDateTime> lastModifiedDateColumn = new TableColumn<>("Last Modified Date");
         lastModifiedDateColumn.setCellValueFactory(new PropertyValueFactory<>("lastModifiedDate"));
+
+        // Custom cell factory to format LocalDateTime
+        lastModifiedDateColumn.setCellFactory(new Callback<TableColumn<ToDoItem, LocalDateTime>, TableCell<ToDoItem, LocalDateTime>>() {
+            @Override
+            public TableCell<ToDoItem, LocalDateTime> call(TableColumn<ToDoItem, LocalDateTime> param) {
+                return new TableCell<ToDoItem, LocalDateTime>() {
+                    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                    @Override
+                    protected void updateItem(LocalDateTime item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                        } else {
+                            setText(item.format(formatter));
+                        }
+                    }
+                };
+            }
+        });
 
         tableView.getColumns().addAll(idColumn, prioritiseColumn, descriptionColumn, whosForColumn, doneColumn, lastModifiedDateColumn);
 
@@ -144,7 +166,7 @@ public class ToDoApp extends Application {
 
         deleteButton.setOnAction(e -> {
             try {
-                toDoItemDAO.deleteItem(Integer.parseInt(idField.getText()));
+                toDoItemDAO.markItemAsDeleted(Integer.parseInt(idField.getText()));
                 refreshTableView();
             } catch (SQLException ex) {
                 ex.printStackTrace();
@@ -160,6 +182,7 @@ public class ToDoApp extends Application {
         deleteStage.setScene(scene);
         deleteStage.showAndWait();
     }
+
 
     private void openEditWindow() {
         Stage editStage = new Stage();
@@ -235,7 +258,6 @@ public class ToDoApp extends Application {
         editStage.showAndWait();
     }
 
-
     private void openArchiveWindow() {
         Stage archiveStage = new Stage();
         archiveStage.initModality(Modality.APPLICATION_MODAL);
@@ -261,10 +283,30 @@ public class ToDoApp extends Application {
         TableColumn<ToDoItem, LocalDateTime> lastModifiedDateColumn = new TableColumn<>("Last Modified Date");
         lastModifiedDateColumn.setCellValueFactory(new PropertyValueFactory<>("lastModifiedDate"));
 
+        // Custom cell factory to format LocalDateTime
+        lastModifiedDateColumn.setCellFactory(new Callback<TableColumn<ToDoItem, LocalDateTime>, TableCell<ToDoItem, LocalDateTime>>() {
+            @Override
+            public TableCell<ToDoItem, LocalDateTime> call(TableColumn<ToDoItem, LocalDateTime> param) {
+                return new TableCell<ToDoItem, LocalDateTime>() {
+                    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                    @Override
+                    protected void updateItem(LocalDateTime item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (empty || item == null) {
+                            setText(null);
+                        } else {
+                            setText(item.format(formatter));
+                        }
+                    }
+                };
+            }
+        });
+
         archiveTableView.getColumns().addAll(idColumn, prioritiseColumn, descriptionColumn, whosForColumn, doneColumn, lastModifiedDateColumn);
 
         try {
-            List<ToDoItem> archivedItems = toDoItemDAO.getFinishedItems();
+            List<ToDoItem> archivedItems = toDoItemDAO.getArchivedItems();
             archiveTableView.getItems().setAll(archivedItems);
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -275,6 +317,7 @@ public class ToDoApp extends Application {
         archiveStage.setScene(scene);
         archiveStage.showAndWait();
     }
+
 
     public static void main(String[] args) {
         launch(args);

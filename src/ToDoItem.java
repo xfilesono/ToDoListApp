@@ -7,6 +7,7 @@ public class ToDoItem {
     private String whosFor;
     private boolean done;
     private LocalDateTime lastModifiedDate;
+    private boolean isDeleted;
 
     // Constructors
     public ToDoItem() {}
@@ -62,6 +63,14 @@ public class ToDoItem {
 
     public void setDone(boolean done) {
         this.done = done;
+    }
+
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setDeleted(boolean isDeleted) {
+        this.isDeleted = isDeleted;
     }
 
     public LocalDateTime getLastModifiedDate() {
