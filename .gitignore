@@ -1,4 +1,4 @@
-# Default ignored files
-/shelf/
-/src/.env
-/out/
+# ignored files
+src/.env
+out/
+.idea
