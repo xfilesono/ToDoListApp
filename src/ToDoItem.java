@@ -12,13 +12,14 @@ public class ToDoItem {
     // Constructors
     public ToDoItem() {}
 
-    public ToDoItem(int id, int prioritise, String description, String whosFor, boolean done, LocalDateTime lastModifiedDate) {
+    public ToDoItem(int id, int prioritise, String description, String whosFor, boolean done, LocalDateTime lastModifiedDate, boolean isDeleted) {
         this.id = id;
         this.prioritise = prioritise;
         this.description = description;
         this.whosFor = whosFor;
         this.done = done;
         this.lastModifiedDate = lastModifiedDate;
+        this.isDeleted = isDeleted;
     }
 
     // Getters and Setters
@@ -91,6 +92,7 @@ public class ToDoItem {
                 ", whosFor='" + whosFor + '\'' +
                 ", done=" + done +
                 ", lastModifiedDate=" + lastModifiedDate +
+                ", isDeleted=" + isDeleted +
                 '}';
     }
 }

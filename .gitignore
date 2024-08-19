@@ -30,3 +30,4 @@ bin/
 
 ### Env file ###
 /src/.env
+*.env

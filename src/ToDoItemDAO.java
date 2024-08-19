@@ -17,6 +17,7 @@ public class ToDoItemDAO {
                 item.setWhosFor(rs.getString("whos_for"));
                 item.setDone(rs.getBoolean("done"));
                 item.setLastModifiedDate(rs.getTimestamp("last_modified_date").toLocalDateTime());
+                item.setDone(rs.getBoolean("isDeleted"));
                 items.add(item);
             }
         }
@@ -59,6 +60,7 @@ public class ToDoItemDAO {
                 item.setWhosFor(rs.getString("whos_for"));
                 item.setDone(rs.getBoolean("done"));
                 item.setLastModifiedDate(rs.getTimestamp("last_modified_date").toLocalDateTime());
+                item.setDeleted(rs.getBoolean("isDeleted"));
                 items.add(item);
             }
         }
@@ -66,7 +68,7 @@ public class ToDoItemDAO {
     }
 
     public void addItem(ToDoItem item) throws SQLException {
-        String query = "INSERT INTO tasks (prioritise, description, whos_for, done, last_modified_date) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO tasks (prioritise, description, whos_for, done, last_modified_date, isDeleted) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, item.getPrioritise());
@@ -74,6 +76,8 @@ public class ToDoItemDAO {
             stmt.setString(3, item.getWhosFor());
             stmt.setBoolean(4, item.isDone());
             stmt.setTimestamp(5, Timestamp.valueOf(item.getLastModifiedDate()));
+            stmt.setBoolean(6, item.isDeleted());
+
             stmt.executeUpdate();
         }
     }
@@ -88,7 +92,7 @@ public class ToDoItemDAO {
     }
 
     public void updateItem(ToDoItem item) throws SQLException {
-        String query = "UPDATE tasks SET prioritise = ?, description = ?, whos_for = ?, done = ?, last_modified_date = ? WHERE id = ?";
+        String query = "UPDATE tasks SET prioritise = ?, description = ?, whos_for = ?, done = ?, last_modified_date = ?, isDeleted = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, item.getPrioritise());
@@ -96,7 +100,8 @@ public class ToDoItemDAO {
             stmt.setString(3, item.getWhosFor());
             stmt.setBoolean(4, item.isDone());
             stmt.setTimestamp(5, Timestamp.valueOf(item.getLastModifiedDate()));
-            stmt.setInt(6, item.getId());
+            stmt.setBoolean(6, item.isDeleted());
+            stmt.setInt(7, item.getId());
             stmt.executeUpdate();
         }
     }
@@ -115,6 +120,7 @@ public class ToDoItemDAO {
                     item.setWhosFor(rs.getString("whos_for"));
                     item.setDone(rs.getBoolean("done"));
                     item.setLastModifiedDate(rs.getTimestamp("last_modified_date").toLocalDateTime());
+                    item.setDeleted(rs.getBoolean("isDeleted"));
                     return item;
                 }
             }

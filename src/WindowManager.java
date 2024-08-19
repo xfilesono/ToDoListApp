@@ -223,6 +223,10 @@ public class WindowManager {
         lastModifiedDateColumn.setCellValueFactory(new PropertyValueFactory<>("lastModifiedDate"));
         lastModifiedDateColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 14px;");
 
+        TableColumn<ToDoItem, Boolean> isDeletedColumn = new TableColumn<>("Is deleted");
+        isDeletedColumn.setCellValueFactory(new PropertyValueFactory<>("isDeleted"));
+        isDeletedColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 14px;");
+
         // Custom cell factory to format LocalDateTime
         lastModifiedDateColumn.setCellFactory(new Callback<TableColumn<ToDoItem, LocalDateTime>, TableCell<ToDoItem, LocalDateTime>>() {
             @Override
@@ -243,7 +247,7 @@ public class WindowManager {
             }
         });
 
-        archiveTableView.getColumns().addAll(idColumn, prioritiseColumn, descriptionColumn, whosForColumn, doneColumn, lastModifiedDateColumn);
+        archiveTableView.getColumns().addAll(idColumn, prioritiseColumn, descriptionColumn, whosForColumn, doneColumn, lastModifiedDateColumn, isDeletedColumn);
 
         try {
             List<ToDoItem> archivedItems = toDoItemDAO.getArchivedItems();
@@ -253,7 +257,7 @@ public class WindowManager {
         }
 
         VBox vbox = new VBox(archiveTableView);
-        Scene scene = new Scene(vbox, 800, 600);
+        Scene scene = new Scene(vbox, 1000, 600);
         archiveStage.setScene(scene);
         archiveStage.showAndWait();
     }

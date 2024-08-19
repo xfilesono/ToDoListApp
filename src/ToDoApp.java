@@ -21,7 +21,7 @@ public class ToDoApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        primaryStage.setTitle("TooDoo");
+        primaryStage.setTitle("TooDoo List");
 
         windowManager = new WindowManager(toDoItemDAO, tableView);
 
@@ -50,6 +50,10 @@ public class ToDoApp extends Application {
         lastModifiedDateColumn.setCellValueFactory(new PropertyValueFactory<>("lastModifiedDate"));
         lastModifiedDateColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 18px;");
 
+        TableColumn<ToDoItem, Boolean> isDeletedColumn = new TableColumn<>("Is Deleted");
+        isDeletedColumn.setCellValueFactory(new PropertyValueFactory<>("isDeleted"));
+        isDeletedColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 18px;");
+
         // Custom cell factory to format LocalDateTime
         lastModifiedDateColumn.setCellFactory(new Callback<TableColumn<ToDoItem, LocalDateTime>, TableCell<ToDoItem, LocalDateTime>>() {
             @Override
@@ -70,7 +74,7 @@ public class ToDoApp extends Application {
             }
         });
 
-        tableView.getColumns().addAll(idColumn, prioritiseColumn, descriptionColumn, whosForColumn, doneColumn, lastModifiedDateColumn);
+        tableView.getColumns().addAll(idColumn, prioritiseColumn, descriptionColumn, whosForColumn, doneColumn, lastModifiedDateColumn, isDeletedColumn);
 
         // Load unfinished tasks on startup
         refreshTableView();
@@ -110,8 +114,8 @@ public class ToDoApp extends Application {
 
         // Add footer text
         Label footer = new Label("CapsCode Inc.");
-        footer.setAlignment(Pos.BOTTOM_LEFT);
-        footer.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 14px;");
+        footer.setAlignment(Pos.BOTTOM_RIGHT);
+        footer.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 18px;");
         vbox.getChildren().add(footer);
     }
 
