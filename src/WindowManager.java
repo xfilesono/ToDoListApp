@@ -68,50 +68,12 @@ public class WindowManager {
         grid.add(whosForField, 1, 1);
         grid.add(prioritiseLabel, 0, 2);
         grid.add(prioritiseField, 1, 2);
-        grid.add(saveButton, 1, 3);
-        grid.add(closeButton, 2, 3);
+        grid.add(saveButton, 3, 1);
+        grid.add(closeButton, 3, 2);
 
-        Scene scene = new Scene(grid, 300, 200);
+        Scene scene = new Scene(grid, 370, 150);
         addStage.setScene(scene);
         addStage.showAndWait();
-    }
-
-    public void openDeleteWindow() {
-        Stage deleteStage = new Stage();
-        deleteStage.initModality(Modality.APPLICATION_MODAL);
-        deleteStage.setTitle("Delete Task");
-
-        GridPane grid = new GridPane();
-        grid.setPadding(new Insets(10));
-        grid.setVgap(10);
-        grid.setHgap(10);
-        grid.setAlignment(Pos.CENTER);
-
-        Label idLabel = new Label("Task ID:");
-        TextField idField = new TextField();
-        Button deleteButton = new Button("Delete");
-        Button closeButton = new Button("Close");
-
-        deleteButton.setOnAction(e -> {
-            try {
-                toDoItemDAO.markItemAsDeleted(Integer.parseInt(idField.getText()));
-                refreshTableView();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-            deleteStage.close();
-        });
-
-        closeButton.setOnAction(e -> deleteStage.close());
-
-        grid.add(idLabel, 0, 0);
-        grid.add(idField, 1, 0);
-        grid.add(deleteButton, 1, 1);
-        grid.add(closeButton, 2, 1);
-
-        Scene scene = new Scene(grid, 300, 150);
-        deleteStage.setScene(scene);
-        deleteStage.showAndWait();
     }
 
     public void openEditWindow() {
@@ -184,10 +146,10 @@ public class WindowManager {
         grid.add(prioritiseField, 1, 3);
         grid.add(doneLabel, 0, 4);
         grid.add(doneCheckBox, 1, 4);
-        grid.add(saveButton, 1, 5);
-        grid.add(closeButton, 2, 5);
+        grid.add(saveButton, 2, 1);
+        grid.add(closeButton, 2, 2);
 
-        Scene scene = new Scene(grid, 400, 300);
+        Scene scene = new Scene(grid, 400, 230);
         editStage.setScene(scene);
         editStage.showAndWait();
     }
@@ -201,31 +163,27 @@ public class WindowManager {
 
         TableColumn<ToDoItem, Integer> idColumn = new TableColumn<>("ID");
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        idColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 14px;");
+        idColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #f2d7d5; -fx-font-size: 14px;");
 
         TableColumn<ToDoItem, Integer> prioritiseColumn = new TableColumn<>("Prioritise");
         prioritiseColumn.setCellValueFactory(new PropertyValueFactory<>("prioritise"));
-        prioritiseColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 14px;");
+        prioritiseColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #f8fa9d; -fx-font-size: 14px; -fx-alignment: center;");
 
         TableColumn<ToDoItem, String> descriptionColumn = new TableColumn<>("Description");
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
-        descriptionColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 16px;");
+        descriptionColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #d1f2eb; -fx-font-size: 16px;");
 
         TableColumn<ToDoItem, String> whosForColumn = new TableColumn<>("Who's For");
         whosForColumn.setCellValueFactory(new PropertyValueFactory<>("whosFor"));
-        whosForColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 14px; -fx-background-color: lightblue;");
+        whosForColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #fcf3cf; -fx-font-size: 16px;");
 
         TableColumn<ToDoItem, Boolean> doneColumn = new TableColumn<>("Done");
         doneColumn.setCellValueFactory(new PropertyValueFactory<>("done"));
-        doneColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 14px;");
+        doneColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #d4e6f1; -fx-font-size: 14px;");
 
         TableColumn<ToDoItem, LocalDateTime> lastModifiedDateColumn = new TableColumn<>("Last Modified Date");
         lastModifiedDateColumn.setCellValueFactory(new PropertyValueFactory<>("lastModifiedDate"));
-        lastModifiedDateColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 14px;");
-
-        TableColumn<ToDoItem, Boolean> isDeletedColumn = new TableColumn<>("Is deleted");
-        isDeletedColumn.setCellValueFactory(new PropertyValueFactory<>("isDeleted"));
-        isDeletedColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 14px;");
+        lastModifiedDateColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #f9bee9; -fx-font-size: 14px;");
 
         // Custom cell factory to format LocalDateTime
         lastModifiedDateColumn.setCellFactory(new Callback<TableColumn<ToDoItem, LocalDateTime>, TableCell<ToDoItem, LocalDateTime>>() {
@@ -247,7 +205,7 @@ public class WindowManager {
             }
         });
 
-        archiveTableView.getColumns().addAll(idColumn, prioritiseColumn, descriptionColumn, whosForColumn, doneColumn, lastModifiedDateColumn, isDeletedColumn);
+        archiveTableView.getColumns().addAll(idColumn, prioritiseColumn, descriptionColumn, whosForColumn, doneColumn, lastModifiedDateColumn);
 
         try {
             List<ToDoItem> archivedItems = toDoItemDAO.getArchivedItems();

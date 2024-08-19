@@ -28,31 +28,27 @@ public class ToDoApp extends Application {
         // Set up columns and data binding
         TableColumn<ToDoItem, Integer> idColumn = new TableColumn<>("ID");
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        idColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 18px;");
+        idColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #f2d7d5; -fx-font-size: 18px;");
 
         TableColumn<ToDoItem, Integer> prioritiseColumn = new TableColumn<>("Prioritise");
         prioritiseColumn.setCellValueFactory(new PropertyValueFactory<>("prioritise"));
-        prioritiseColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 18px;");
+        prioritiseColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #f8fa9d; -fx-font-size: 18px; -fx-alignment: center;");
 
         TableColumn<ToDoItem, String> descriptionColumn = new TableColumn<>("Description");
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
-        descriptionColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 18px;");
+        descriptionColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #d1f2eb; -fx-font-size: 18px;");
 
         TableColumn<ToDoItem, String> whosForColumn = new TableColumn<>("Who's For");
         whosForColumn.setCellValueFactory(new PropertyValueFactory<>("whosFor"));
-        whosForColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 18px;");
+        whosForColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #fcf3cf; -fx-font-size: 18px;");
 
         TableColumn<ToDoItem, Boolean> doneColumn = new TableColumn<>("Done");
         doneColumn.setCellValueFactory(new PropertyValueFactory<>("done"));
-        doneColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 18px;");
+        doneColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #d4e6f1; -fx-font-size: 18px;");
 
         TableColumn<ToDoItem, LocalDateTime> lastModifiedDateColumn = new TableColumn<>("Last Modified Date");
         lastModifiedDateColumn.setCellValueFactory(new PropertyValueFactory<>("lastModifiedDate"));
-        lastModifiedDateColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 18px;");
-
-        TableColumn<ToDoItem, Boolean> isDeletedColumn = new TableColumn<>("Is Deleted");
-        isDeletedColumn.setCellValueFactory(new PropertyValueFactory<>("isDeleted"));
-        isDeletedColumn.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 18px;");
+        lastModifiedDateColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #f9bee9; -fx-font-size: 18px;");
 
         // Custom cell factory to format LocalDateTime
         lastModifiedDateColumn.setCellFactory(new Callback<TableColumn<ToDoItem, LocalDateTime>, TableCell<ToDoItem, LocalDateTime>>() {
@@ -74,24 +70,22 @@ public class ToDoApp extends Application {
             }
         });
 
-        tableView.getColumns().addAll(idColumn, prioritiseColumn, descriptionColumn, whosForColumn, doneColumn, lastModifiedDateColumn, isDeletedColumn);
+        tableView.getColumns().addAll(idColumn, prioritiseColumn, descriptionColumn, whosForColumn, doneColumn, lastModifiedDateColumn);
 
         // Load unfinished tasks on startup
         refreshTableView();
 
         Button addButton = new Button("Add");
-        Button deleteButton = new Button("Delete");
         Button editButton = new Button("Edit");
         Button archiveButton = new Button("Archive");
 
         // Set up button actions
         addButton.setOnAction(e -> windowManager.openAddWindow());
-        deleteButton.setOnAction(e -> windowManager.openDeleteWindow());
         editButton.setOnAction(e -> windowManager.openEditWindow());
         archiveButton.setOnAction(e -> windowManager.openArchiveWindow());
 
         // Style buttons and arrange them in a single line at the bottom
-        HBox buttonBox = new HBox(10, addButton, deleteButton, editButton, archiveButton);
+        HBox buttonBox = new HBox(10, addButton, editButton, archiveButton);
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.setPadding(new Insets(10));
         buttonBox.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 18px; -fx-background-color: lightgray;");
