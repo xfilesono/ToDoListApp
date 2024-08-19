@@ -1,3 +1,5 @@
 #do not add
 !.src/.env
 *.env
+/src
+/out
