@@ -1,5 +1,4 @@
 #do not add
-!.src/.env
-*.env
-/src
+/src/.env
 /out
+/.idea
