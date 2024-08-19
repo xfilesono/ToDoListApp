@@ -29,5 +29,5 @@ bin/
 .DS_Store
 
 ### Env file ###
-src/.env
+src/
 *.env
