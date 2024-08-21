@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_todolistapp" default="compile.module.todolistapp">
+  <dirname property="module.todolistapp.basedir" file="${ant.file.module_todolistapp}"/>
+  
+  <property name="module.jdk.home.todolistapp" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.todolistapp" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.todolistapp" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.todolistapp" value="-encoding UTF-8 -source 17 -target 17 ${compiler.args}"/>
+  
+  <property name="todolistapp.output.dir" value="${module.todolistapp.basedir}/out/production/ToDoListApp"/>
+  <property name="todolistapp.testoutput.dir" value="${module.todolistapp.basedir}/out/test/ToDoListApp"/>
+  
+  <path id="todolistapp.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="todolistapp.module.production.classpath">
+    <path refid="${module.jdk.classpath.todolistapp}"/>
+    <path refid="library.mysql-connector-j-9.0.0.classpath"/>
+    <path refid="library.lib.classpath"/>
+    <path refid="library.javafx-sdk-21.0.classpath"/>
+    <pathelement location="${basedir}/../../Downloads/java-dotenv-5.2.2.jar"/>
+    <pathelement location="${basedir}/../../Downloads/kotlin-stdlib-2.0.0.jar"/>
+    <fileset dir="${basedir}/../../../../Program Files/Java/javafx-jmods-22.0.2">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <path refid="library.javafx-jmods-22.0.classpath"/>
+  </path>
+  
+  <path id="todolistapp.runtime.production.module.classpath">
+    <pathelement location="${todolistapp.output.dir}"/>
+    <path refid="library.mysql-connector-j-9.0.0.classpath"/>
+    <path refid="library.lib.classpath"/>
+    <path refid="library.javafx-sdk-21.0.classpath"/>
+    <pathelement location="${basedir}/../../Downloads/java-dotenv-5.2.2.jar"/>
+    <pathelement location="${basedir}/../../Downloads/kotlin-stdlib-2.0.0.jar"/>
+    <fileset dir="${basedir}/../../../../Program Files/Java/javafx-jmods-22.0.2">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <path refid="library.javafx-jmods-22.0.classpath"/>
+  </path>
+  
+  <path id="todolistapp.module.classpath">
+    <path refid="${module.jdk.classpath.todolistapp}"/>
+    <pathelement location="${todolistapp.output.dir}"/>
+    <path refid="library.mysql-connector-j-9.0.0.classpath"/>
+    <path refid="library.lib.classpath"/>
+    <path refid="library.javafx-sdk-21.0.classpath"/>
+    <pathelement location="${basedir}/../../Downloads/java-dotenv-5.2.2.jar"/>
+    <pathelement location="${basedir}/../../Downloads/kotlin-stdlib-2.0.0.jar"/>
+    <fileset dir="${basedir}/../../../../Program Files/Java/javafx-jmods-22.0.2">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <path refid="library.javafx-jmods-22.0.classpath"/>
+  </path>
+  
+  <path id="todolistapp.runtime.module.classpath">
+    <pathelement location="${todolistapp.testoutput.dir}"/>
+    <pathelement location="${todolistapp.output.dir}"/>
+    <path refid="library.mysql-connector-j-9.0.0.classpath"/>
+    <path refid="library.lib.classpath"/>
+    <path refid="library.javafx-sdk-21.0.classpath"/>
+    <pathelement location="${basedir}/../../Downloads/java-dotenv-5.2.2.jar"/>
+    <pathelement location="${basedir}/../../Downloads/kotlin-stdlib-2.0.0.jar"/>
+    <fileset dir="${basedir}/../../../../Program Files/Java/javafx-jmods-22.0.2">
+      <patternset refid="library.patterns"/>
+    </fileset>
+    <path refid="library.javafx-jmods-22.0.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.todolistapp">
+    <patternset refid="ignored.files"/>
+    <exclude name="out/**"/>
+    <exclude name="out/artifacts/**"/>
+    <exclude name="out/artifacts/ToDoListApp_jar/**"/>
+    <exclude name="out/production/**"/>
+    <exclude name="out/production/ToDoListApp/**"/>
+    <exclude name="out/production/ToDoListApp/src/**"/>
+    <exclude name="out/production/ToDoListApp/src/META-INF/**"/>
+    <exclude name="out/production/ToDoListApp/.idea/**"/>
+    <exclude name="out/production/ToDoListApp/.idea/artifacts/**"/>
+    <exclude name="out/production/ToDoListApp/.idea/libraries/**"/>
+    <exclude name="out/production/ToDoListApp/META-INF/**"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.todolistapp">
+    <patternset refid="excluded.from.module.todolistapp"/>
+  </patternset>
+  
+  <path id="todolistapp.module.sourcepath">
+    <dirset dir="${module.todolistapp.basedir}/../../IdeaProjects">
+      <include name="ToDoListApp"/>
+      <include name="ToDoListApp/src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.todolistapp" depends="compile.module.todolistapp.production,compile.module.todolistapp.tests" description="Compile module ToDoListApp"/>
+  
+  <target name="compile.module.todolistapp.production" depends="register.custom.compilers" description="Compile module ToDoListApp; production classes">
+    <mkdir dir="${todolistapp.output.dir}"/>
+    <javac2 destdir="${todolistapp.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.todolistapp}/javac">
+      <compilerarg line="${compiler.args.todolistapp}"/>
+      <bootclasspath refid="todolistapp.module.bootclasspath"/>
+      <classpath refid="todolistapp.module.production.classpath"/>
+      <src refid="todolistapp.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.todolistapp"/>
+    </javac2>
+    
+    <copy todir="${todolistapp.output.dir}">
+      <fileset dir="${module.todolistapp.basedir}">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.todolistapp.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.todolistapp.tests" depends="register.custom.compilers,compile.module.todolistapp.production" description="compile module ToDoListApp; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.todolistapp" description="cleanup module">
+    <delete dir="${todolistapp.output.dir}"/>
+    <delete dir="${todolistapp.testoutput.dir}"/>
+  </target>
+</project>

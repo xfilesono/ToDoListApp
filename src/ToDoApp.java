@@ -32,11 +32,11 @@ public class ToDoApp extends Application {
 
         TableColumn<ToDoItem, Integer> prioritiseColumn = new TableColumn<>("Prioritise");
         prioritiseColumn.setCellValueFactory(new PropertyValueFactory<>("prioritise"));
-        prioritiseColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #f8fa9d; -fx-font-size: 18px; -fx-alignment: center;");
+        prioritiseColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #f8fa9d; -fx-font-size: 18px;");
 
         TableColumn<ToDoItem, String> descriptionColumn = new TableColumn<>("Description");
         descriptionColumn.setCellValueFactory(new PropertyValueFactory<>("description"));
-        descriptionColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #d1f2eb; -fx-font-size: 18px;");
+        descriptionColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #d1f2eb; -fx-font-size: 18px; -fx-pref-width:750px;");
 
         TableColumn<ToDoItem, String> whosForColumn = new TableColumn<>("Who's For");
         whosForColumn.setCellValueFactory(new PropertyValueFactory<>("whosFor"));
@@ -88,7 +88,7 @@ public class ToDoApp extends Application {
         HBox buttonBox = new HBox(10, addButton, editButton, archiveButton);
         buttonBox.setAlignment(Pos.CENTER);
         buttonBox.setPadding(new Insets(10));
-        buttonBox.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 18px; -fx-background-color: lightgray;");
+        buttonBox.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 18px; -fx-background-color: lightgreen;");
 
         VBox vbox = new VBox(tableView, buttonBox);
         VBox.setVgrow(tableView, Priority.ALWAYS); // Make the table view grow to fill available space
@@ -106,11 +106,6 @@ public class ToDoApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
 
-        // Add footer text
-        Label footer = new Label("CapsCode Inc.");
-        footer.setAlignment(Pos.BOTTOM_RIGHT);
-        footer.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 18px;");
-        vbox.getChildren().add(footer);
     }
 
     private void refreshTableView() {
