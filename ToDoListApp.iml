@@ -9,7 +9,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="mysql-connector-j-9.0.0" level="project" />
-    <orderEntry type="library" exported="" name="lib" level="project" />
     <orderEntry type="library" exported="" name="javafx-sdk-21.0" level="project" />
     <orderEntry type="module-library" exported="">
       <library>
@@ -39,5 +38,6 @@
         <jarDirectory url="file://C:/Program Files/Java/javafx-jmods-22.0.2" recursive="false" />
       </library>
     </orderEntry>
+    <orderEntry type="library" exported="" name="openjfx.javafx.fxml" level="project" />
   </component>
 </module>
