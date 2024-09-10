@@ -9,35 +9,16 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="mysql-connector-j-9.0.0" level="project" />
-    <orderEntry type="library" exported="" name="javafx-sdk-21.0" level="project" />
     <orderEntry type="module-library" exported="">
       <library>
         <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/java-dotenv-5.2.2.jar!/" />
+          <root url="file://$MODULE_DIR$/lib" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/lib" recursive="false" />
       </library>
     </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/kotlin-stdlib-2.0.0.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library" exported="">
-      <library>
-        <CLASSES>
-          <root url="file://C:/Program Files/Java/javafx-jmods-22.0.2" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-        <jarDirectory url="file://C:/Program Files/Java/javafx-jmods-22.0.2" recursive="false" />
-      </library>
-    </orderEntry>
-    <orderEntry type="library" exported="" name="openjfx.javafx.fxml" level="project" />
+    <orderEntry type="library" name="javafx-swt" level="project" />
   </component>
 </module>
