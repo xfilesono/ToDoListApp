@@ -25,7 +25,7 @@ public class ToDoItemDAO {
 
     public List<ToDoItem> getUnfinishedItems() throws SQLException {
         List<ToDoItem> items = new ArrayList<>();
-        String query = "SELECT * FROM tasks WHERE done = false";
+        String query = "SELECT * FROM tasks WHERE done = false ORDER BY last_modified_date DESC";
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
@@ -42,7 +42,6 @@ public class ToDoItemDAO {
         }
         return items;
     }
-
 
     public List<ToDoItem> getFinishedItems() throws SQLException {
         List<ToDoItem> items = new ArrayList<>();
@@ -140,5 +139,4 @@ public class ToDoItemDAO {
         }
         return items;
     }
-
 }
