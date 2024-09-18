@@ -1,4 +1,5 @@
 #do not add
 /src/.env
-/out
+/out/production
+/out/artifacts/ToDoListApp_jar old with bash
 /.idea
