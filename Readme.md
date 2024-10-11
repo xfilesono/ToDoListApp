@@ -17,8 +17,8 @@ You can download latest version of Java from the link: https://java.com/en/downl
 Gui Screenshots will be added later to /resource folder.
 
 # Future Upgrades
-Priority can be fixed as numbers or low-high and can be selected as like drop down list.
-Edit screen can't fetch the other lines, has to be a id textbox and fetch button.
-Archive screen can have edit button, so anyone can mark a task as unfinished again.
-Need to add a column or two in SQL table for created or deleted or mark as done date.
-There has to be website checker for up/down status.
+1. Priority can be fixed as numbers or low-high and can be selected as like drop down list.
+2. Edit screen can't fetch the other lines, has to be an id textbox and fetch button.
+3. Archive screen can have edit button, so anyone can mark a task as unfinished again.
+4. Need to add a column or two in SQL table for created or deleted or mark as done date.
+5. There has to be website checker for up/down status.

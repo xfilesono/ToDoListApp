@@ -21,15 +21,16 @@ public class ToDoApp extends Application {
     private ToDoItemDAO toDoItemDAO = new ToDoItemDAO();
     private TableView<ToDoItem> tableView = new TableView<>();
     private WindowManager windowManager;
-    private Label johnsonBrothersStatus = new Label();
-    private Label johnsonsCoffeeStatus = new Label();
+    private Label johnsonBrothersStatus = new Label("Checking...");
+    private Label johnsonsCoffeeStatus = new Label("Checking...");
+    private Label urlString1 = new Label("http://www.johnsonbrothers.co.uk/");
+    private Label urlString2 = new Label("https://www.johnsonscoffee.com/");
     // Add other status labels as needed
 
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("TooDoo List");
-
-        windowManager = new WindowManager(toDoItemDAO, tableView);
+        windowManager = new WindowManager(toDoItemDAO, tableView, johnsonBrothersStatus, johnsonsCoffeeStatus, urlString1, urlString2);
 
         // Set up columns and data binding
         TableColumn<ToDoItem, Integer> idColumn = new TableColumn<>("ID");
@@ -40,6 +41,47 @@ public class ToDoApp extends Application {
         TableColumn<ToDoItem, Integer> prioritiseColumn = new TableColumn<>("Priority");
         prioritiseColumn.setCellValueFactory(new PropertyValueFactory<>("prioritise"));
         prioritiseColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #f8fa9d; -fx-font-size: 18px; -fx-alignment: center;");
+        prioritiseColumn.setCellFactory(tc -> new TableCell<ToDoItem, Integer>() {
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    String text;
+                    String color;
+                    switch (item) {
+                        case 5:
+                            text = "Future";
+                            color = "#ADD8E6"; // Light blue
+                            break;
+                        case 4:
+                            text = "Low";
+                            color = "#90EE90"; // Light green
+                            break;
+                        case 3:
+                            text = "Medium";
+                            color = "#FFFF00"; // Yellow
+                            break;
+                        case 2:
+                            text = "High";
+                            color = "#FFA500"; // Orange
+                            break;
+                        case 1:
+                            text = "Urgent";
+                            color = "#FF4500"; // Red
+                            break;
+                        default:
+                            text = "Unknown";
+                            color = ""; // White
+                            break;
+                    }
+                    setText(text);
+                    setStyle("-fx-background-color: " + color + "; -fx-font-family: 'Garamond'; -fx-font-size: 18px; -fx-alignment: center;");
+                }
+            }
+        });
         prioritiseColumn.setPrefWidth(85);
 
         TableColumn<ToDoItem, String> descriptionColumn = new TableColumn<>("Description");
@@ -56,12 +98,12 @@ public class ToDoApp extends Application {
             return cell;
         });
 
-        TableColumn<ToDoItem, String> whosForColumn = new TableColumn<>("Who's For");
+        TableColumn<ToDoItem, String> whosForColumn = new TableColumn<>("Related to");
         whosForColumn.setCellValueFactory(new PropertyValueFactory<>("whosFor"));
         whosForColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #fcf3cf; -fx-font-size: 18px;");
         whosForColumn.setPrefWidth(120);
 
-        TableColumn<ToDoItem, LocalDateTime> lastModifiedDateColumn = new TableColumn<>("Last Modified Date");
+        TableColumn<ToDoItem, LocalDateTime> lastModifiedDateColumn = new TableColumn<>("Last Update");
         lastModifiedDateColumn.setCellValueFactory(new PropertyValueFactory<>("lastModifiedDate"));
         lastModifiedDateColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #f9bee9; -fx-font-size: 18px; -fx-alignment: center;");
         lastModifiedDateColumn.setPrefWidth(170);
@@ -96,8 +138,26 @@ public class ToDoApp extends Application {
 
         // Set up button actions
         addButton.setOnAction(e -> windowManager.openAddWindow());
-        editButton.setOnAction(e -> windowManager.openEditWindow());
+        editButton.setOnAction(e -> {
+            ToDoItem selectedItem = tableView.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                windowManager.openEditWindow(selectedItem);
+            } else {
+                windowManager.openEditWindow();
+            }
+        });
         archiveButton.setOnAction(e -> windowManager.openArchiveWindow());
+
+        // Add mouse click event handler to clear selection on double-click
+        tableView.setRowFactory(tv -> {
+            TableRow<ToDoItem> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    tableView.getSelectionModel().clearSelection();
+                }
+            });
+            return row;
+        });
 
         // Style buttons and arrange them in a single line at the bottom
         HBox buttonBox = new HBox(10, addButton, editButton, archiveButton);
@@ -115,13 +175,15 @@ public class ToDoApp extends Application {
         logoImageView.setPreserveRatio(true);
         logoImageView.setStyle("-fx-background-color: #ADD8E6;"); // Light blue background
 
-        HBox logoBox = new HBox(logoImageView, johnsonBrothersStatus, johnsonsCoffeeStatus); // Add other status labels
+        // Add status labels beside the logo
+        urlString1.setStyle("-fx-font-family: 'Garamond'; -fx-color: #c6f3ef; -fx-font-size: 18px;");
+        urlString2.setStyle("-fx-font-family: 'Garamond'; -fx-color: #c6f3ef; -fx-font-size: 18px;");
+        HBox logoBox = new HBox(10, urlString1, johnsonBrothersStatus, logoImageView, urlString2, johnsonsCoffeeStatus); // Add other status labels
         logoBox.setAlignment(Pos.TOP_CENTER);
         logoBox.setPadding(new Insets(10));
 
         VBox mainBox = new VBox(logoBox, vbox, buttonBox);
         Scene scene = new Scene(mainBox, 1200, 540);
-
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/resources/3b.png")));
         primaryStage.setScene(scene);
         primaryStage.setResizable(false); // Lock window size

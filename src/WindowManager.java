@@ -1,4 +1,6 @@
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Modality;
@@ -9,7 +11,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.util.Callback;
 import javafx.scene.text.Text;
-
 import java.time.LocalDateTime;
 import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
@@ -22,13 +23,25 @@ import java.util.TimerTask;
 public class WindowManager {
     private ToDoItemDAO toDoItemDAO;
     private TableView<ToDoItem> tableView;
-    private Label johnsonBrothersStatus = new Label();
-    private Label johnsonsCoffeeStatus = new Label();
+    private Label johnsonBrothersStatus;
+    private Label johnsonsCoffeeStatus;
+    private Label urlString1;
+    private Label urlString2;
+    private Image upImage;
+    private Image downImage;
+    private String url1 = "http://www.johnsonbrothers.co.uk/";
+    private String url2 = "https://www.johnsonscoffee.com/";
     // Add other status labels as needed
 
-    public WindowManager(ToDoItemDAO toDoItemDAO, TableView<ToDoItem> tableView) {
+    public WindowManager(ToDoItemDAO toDoItemDAO, TableView<ToDoItem> tableView, Label johnsonBrothersStatus, Label johnsonsCoffeeStatus, Label urlString1, Label urlString2) {
         this.toDoItemDAO = toDoItemDAO;
         this.tableView = tableView;
+        this.johnsonBrothersStatus = johnsonBrothersStatus;
+        this.johnsonsCoffeeStatus = johnsonsCoffeeStatus;
+        this.urlString1 = urlString1;
+        this.urlString2 = urlString2;
+        this.upImage = new Image(getClass().getResourceAsStream("/resources/up.png"));
+        this.downImage = new Image(getClass().getResourceAsStream("/resources/down.png"));
         startPingService();
     }
 
@@ -45,7 +58,7 @@ public class WindowManager {
 
         Label descriptionLabel = new Label("Description:");
         TextField descriptionField = new TextField();
-        Label whosForLabel = new Label("Who's For:");
+        Label whosForLabel = new Label("Related to:");
         TextField whosForField = new TextField();
         Label prioritiseLabel = new Label("Prioritise (1-5):");
         TextField prioritiseField = new TextField();
@@ -59,7 +72,6 @@ public class WindowManager {
             newItem.setWhosFor(whosForField.getText());
             newItem.setDone(false);
             newItem.setLastModifiedDate(LocalDateTime.now());
-
             try {
                 toDoItemDAO.addItem(newItem);
                 refreshTableView();
@@ -96,34 +108,45 @@ public class WindowManager {
         grid.setHgap(10);
         grid.setAlignment(Pos.CENTER);
 
+        Label idLabel = new Label("ID:");
+        TextField idField = new TextField();
+        Button fetchButton = new Button("Fetch");
+
         Label descriptionLabel = new Label("Description:");
         TextField descriptionField = new TextField();
-        Label whosForLabel = new Label("Who's For:");
+        Label whosForLabel = new Label("Related to:");
         TextField whosForField = new TextField();
         Label prioritiseLabel = new Label("Prioritise (1-5):");
         TextField prioritiseField = new TextField();
         Label doneLabel = new Label("Done:");
         CheckBox doneCheckBox = new CheckBox();
+
         Button saveButton = new Button("Save");
         Button closeButton = new Button("Close");
 
-        ToDoItem selectedItem = tableView.getSelectionModel().getSelectedItem();
-        if (selectedItem != null) {
-            descriptionField.setText(selectedItem.getDescription());
-            whosForField.setText(selectedItem.getWhosFor());
-            prioritiseField.setText(String.valueOf(selectedItem.getPrioritise()));
-            doneCheckBox.setSelected(selectedItem.isDone());
-        }
+        fetchButton.setOnAction(e -> {
+            try {
+                int id = Integer.parseInt(idField.getText());
+                ToDoItem fetchedItem = toDoItemDAO.getItemById(id);
+                if (fetchedItem != null) {
+                    descriptionField.setText(fetchedItem.getDescription());
+                    whosForField.setText(fetchedItem.getWhosFor());
+                    prioritiseField.setText(String.valueOf(fetchedItem.getPrioritise()));
+                    doneCheckBox.setSelected(fetchedItem.isDone());
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        });
 
         saveButton.setOnAction(e -> {
             ToDoItem updatedItem = new ToDoItem();
-            updatedItem.setId(selectedItem.getId());
+            updatedItem.setId(Integer.parseInt(idField.getText()));
             updatedItem.setPrioritise(Integer.parseInt(prioritiseField.getText()));
             updatedItem.setDescription(descriptionField.getText());
             updatedItem.setWhosFor(whosForField.getText());
             updatedItem.setDone(doneCheckBox.isSelected());
             updatedItem.setLastModifiedDate(LocalDateTime.now());
-
             try {
                 toDoItemDAO.updateItem(updatedItem);
                 refreshTableView();
@@ -135,18 +158,84 @@ public class WindowManager {
 
         closeButton.setOnAction(e -> editStage.close());
 
-        grid.add(descriptionLabel, 0, 0);
-        grid.add(descriptionField, 1, 0);
-        grid.add(whosForLabel, 0, 1);
-        grid.add(whosForField, 1, 1);
-        grid.add(prioritiseLabel, 0, 2);
-        grid.add(prioritiseField, 1, 2);
-        grid.add(doneLabel, 0, 3);
-        grid.add(doneCheckBox, 1, 3);
+        grid.add(idLabel, 0, 0);
+        grid.add(idField, 1, 0);
+        grid.add(fetchButton, 2, 0);
+        grid.add(descriptionLabel, 0, 1);
+        grid.add(descriptionField, 1, 1);
+        grid.add(whosForLabel, 0, 2);
+        grid.add(whosForField, 1, 2);
+        grid.add(prioritiseLabel, 0, 3);
+        grid.add(prioritiseField, 1, 3);
+        grid.add(doneLabel, 0, 4);
+        grid.add(doneCheckBox, 1, 4);
         grid.add(saveButton, 3, 1);
         grid.add(closeButton, 3, 2);
 
-        Scene scene = new Scene(grid, 400, 230);
+        Scene scene = new Scene(grid, 400, 250);
+        editStage.setScene(scene);
+        editStage.showAndWait();
+    }
+
+    public void openEditWindow(ToDoItem selectedItem) {
+        Stage editStage = new Stage();
+        editStage.initModality(Modality.APPLICATION_MODAL);
+        editStage.setTitle("Edit Task");
+
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10));
+        grid.setVgap(10);
+        grid.setHgap(10);
+        grid.setAlignment(Pos.CENTER);
+
+        Label idLabel = new Label("ID:");
+        TextField idField = new TextField(String.valueOf(selectedItem.getId()));
+        idField.setDisable(true); // Disable editing of ID field
+
+        Label descriptionLabel = new Label("Description:");
+        TextField descriptionField = new TextField(selectedItem.getDescription());
+        Label whosForLabel = new Label("Related to:");
+        TextField whosForField = new TextField(selectedItem.getWhosFor());
+        Label prioritiseLabel = new Label("Prioritise (1-5):");
+        TextField prioritiseField = new TextField(String.valueOf(selectedItem.getPrioritise()));
+        Label doneLabel = new Label("Done:");
+        CheckBox doneCheckBox = new CheckBox();
+        doneCheckBox.setSelected(selectedItem.isDone());
+
+        Button saveButton = new Button("Save");
+        Button closeButton = new Button("Close");
+
+        saveButton.setOnAction(e -> {
+            selectedItem.setPrioritise(Integer.parseInt(prioritiseField.getText()));
+            selectedItem.setDescription(descriptionField.getText());
+            selectedItem.setWhosFor(whosForField.getText());
+            selectedItem.setDone(doneCheckBox.isSelected());
+            selectedItem.setLastModifiedDate(LocalDateTime.now());
+            try {
+                toDoItemDAO.updateItem(selectedItem);
+                refreshTableView();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+            editStage.close();
+        });
+
+        closeButton.setOnAction(e -> editStage.close());
+
+        grid.add(idLabel, 0, 0);
+        grid.add(idField, 1, 0);
+        grid.add(descriptionLabel, 0, 1);
+        grid.add(descriptionField, 1, 1);
+        grid.add(whosForLabel, 0, 2);
+        grid.add(whosForField, 1, 2);
+        grid.add(prioritiseLabel, 0, 3);
+        grid.add(prioritiseField, 1, 3);
+        grid.add(doneLabel, 0, 4);
+        grid.add(doneCheckBox, 1, 4);
+        grid.add(saveButton, 3, 1);
+        grid.add(closeButton, 3, 2);
+
+        Scene scene = new Scene(grid, 400, 250);
         editStage.setScene(scene);
         editStage.showAndWait();
     }
@@ -167,6 +256,47 @@ public class WindowManager {
         TableColumn<ToDoItem, Integer> prioritiseColumn = new TableColumn<>("Prioritise");
         prioritiseColumn.setCellValueFactory(new PropertyValueFactory<>("prioritise"));
         prioritiseColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #f8fa9d; -fx-font-size: 14px; -fx-alignment: center;");
+        prioritiseColumn.setCellFactory(tc -> new TableCell<ToDoItem, Integer>() {
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setStyle("");
+                } else {
+                    String text;
+                    String color;
+                    switch (item) {
+                        case 5:
+                            text = "Future";
+                            color = "#ADD8E6"; // Light blue
+                            break;
+                        case 4:
+                            text = "Low";
+                            color = "#90EE90"; // Light green
+                            break;
+                        case 3:
+                            text = "Medium";
+                            color = "#FFFF00"; // Yellow
+                            break;
+                        case 2:
+                            text = "High";
+                            color = "#FFA500"; // Orange
+                            break;
+                        case 1:
+                            text = "Urgent";
+                            color = "#FF4500"; // Red
+                            break;
+                        default:
+                            text = "Unknown";
+                            color = ""; // White
+                            break;
+                    }
+                    setText(text);
+                    setStyle("-fx-background-color: " + color + "; -fx-font-family: 'Garamond'; -fx-font-size: 18px; -fx-alignment: center;");
+                }
+            }
+        });
         prioritiseColumn.setPrefWidth(100);
 
         TableColumn<ToDoItem, String> descriptionColumn = new TableColumn<>("Description");
@@ -183,7 +313,7 @@ public class WindowManager {
             return cell;
         });
 
-        TableColumn<ToDoItem, String> whosForColumn = new TableColumn<>("Who's For");
+        TableColumn<ToDoItem, String> whosForColumn = new TableColumn<>("Related to");
         whosForColumn.setCellValueFactory(new PropertyValueFactory<>("whosFor"));
         whosForColumn.setStyle("-fx-font-family: 'Garamond'; -fx-color: #fcf3cf; -fx-font-size: 16px;");
         whosForColumn.setPrefWidth(120);
@@ -226,8 +356,32 @@ public class WindowManager {
             ex.printStackTrace();
         }
 
-        VBox vbox = new VBox(archiveTableView);
-        Scene scene = new Scene(vbox, 1000, 400);
+        Button editButton = new Button("Edit");
+        editButton.setOnAction(e -> {
+            ToDoItem selectedItem = archiveTableView.getSelectionModel().getSelectedItem();
+            if (selectedItem != null) {
+                openEditWindow(selectedItem);
+            } else {
+                openEditWindow();
+            }
+        });
+
+        // Add mouse click event handler to clear selection on double-click
+        archiveTableView.setRowFactory(tv -> {
+            TableRow<ToDoItem> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && (!row.isEmpty())) {
+                    archiveTableView.getSelectionModel().clearSelection();
+                }
+            });
+            return row;
+        });
+
+        VBox vbox = new VBox(10, archiveTableView, editButton);
+        vbox.setAlignment(Pos.CENTER);
+        vbox.setPadding(new Insets(10));
+
+        Scene scene = new Scene(vbox, 1000, 450);
         archiveStage.setScene(scene);
         archiveStage.showAndWait();
     }
@@ -247,8 +401,8 @@ public class WindowManager {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                checkWebsiteStatus("http://www.johnsonbrothers.co.uk/", johnsonBrothersStatus);
-                checkWebsiteStatus("https://www.johnsonscoffee.com/", johnsonsCoffeeStatus);
+                checkWebsiteStatus(url1, johnsonBrothersStatus);
+                checkWebsiteStatus(url2, johnsonsCoffeeStatus);
                 // Add other websites similarly
             }
         };
@@ -264,12 +418,18 @@ public class WindowManager {
             connection.connect();
             int code = connection.getResponseCode();
             if (code == 200) {
-                statusLabel.setStyle("-fx-background-color: green;");
+                updateStatusLabel(statusLabel, upImage);
             } else {
-                statusLabel.setStyle("-fx-background-color: red;");
+                updateStatusLabel(statusLabel, downImage);
             }
         } catch (Exception e) {
-            statusLabel.setStyle("-fx-background-color: red;");
+            updateStatusLabel(statusLabel, downImage);
         }
+    }
+
+    private void updateStatusLabel(Label statusLabel, Image image) {
+        javafx.application.Platform.runLater(() -> {
+            statusLabel.setGraphic(new ImageView(image));
+        });
     }
 }
