@@ -21,10 +21,10 @@ public class ToDoApp extends Application {
     private ToDoItemDAO toDoItemDAO = new ToDoItemDAO();
     private TableView<ToDoItem> tableView = new TableView<>();
     private WindowManager windowManager;
-    private Label johnsonBrothersStatus = new Label("Checking...");
-    private Label johnsonsCoffeeStatus = new Label("Checking...");
-    private Label urlString1 = new Label("http://www.johnsonbrothers.co.uk/");
-    private Label urlString2 = new Label("https://www.johnsonscoffee.com/");
+    private Label johnsonBrothersStatus = new Label("");
+    private Label johnsonsCoffeeStatus = new Label("");
+    private Label urlString1 = new Label("Johnson Brothers");
+    private Label urlString2 = new Label("Johnsons Coffee");
     // Add other status labels as needed
 
     @Override
@@ -176,8 +176,8 @@ public class ToDoApp extends Application {
         logoImageView.setStyle("-fx-background-color: #ADD8E6;"); // Light blue background
 
         // Add status labels beside the logo
-        urlString1.setStyle("-fx-font-family: 'Garamond'; -fx-color: #c6f3ef; -fx-font-size: 18px;");
-        urlString2.setStyle("-fx-font-family: 'Garamond'; -fx-color: #c6f3ef; -fx-font-size: 18px;");
+        urlString1.setStyle("-fx-font-family: 'Garamond'; -fx-color: #c6f3ef; -fx-font-size: 18px; fx-align: center;");
+        urlString2.setStyle("-fx-font-family: 'Garamond'; -fx-color: #c6f3ef; -fx-font-size: 18px; fx- align: center;");
         HBox logoBox = new HBox(10, urlString1, johnsonBrothersStatus, logoImageView, urlString2, johnsonsCoffeeStatus); // Add other status labels
         logoBox.setAlignment(Pos.TOP_CENTER);
         logoBox.setPadding(new Insets(10));

@@ -40,8 +40,8 @@ public class WindowManager {
         this.johnsonsCoffeeStatus = johnsonsCoffeeStatus;
         this.urlString1 = urlString1;
         this.urlString2 = urlString2;
-        this.upImage = new Image(getClass().getResourceAsStream("/resources/up.png"));
-        this.downImage = new Image(getClass().getResourceAsStream("/resources/down.png"));
+        this.upImage = new Image(getClass().getResourceAsStream("/resources/upx.png"));
+        this.downImage = new Image(getClass().getResourceAsStream("/resources/downx.png"));
         startPingService();
     }
 
