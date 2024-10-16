@@ -1,6 +1,7 @@
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.Modality;
@@ -25,24 +26,39 @@ public class WindowManager {
     private TableView<ToDoItem> tableView;
     private Label johnsonBrothersStatus;
     private Label johnsonsCoffeeStatus;
-    private Label urlString1;
-    private Label urlString2;
     private Image upImage;
     private Image downImage;
     private String url1 = "http://www.johnsonbrothers.co.uk/";
     private String url2 = "https://www.johnsonscoffee.com/";
+    private VBox statusVBox;
+    private WebsiteDAO websiteDAO;
+    private HBox statusHBox;
     // Add other status labels as needed
 
-    public WindowManager(ToDoItemDAO toDoItemDAO, TableView<ToDoItem> tableView, Label johnsonBrothersStatus, Label johnsonsCoffeeStatus, Label urlString1, Label urlString2) {
+    public WindowManager(ToDoItemDAO toDoItemDAO, TableView<ToDoItem> tableView, Label johnsonBrothersStatus, Label johnsonsCoffeeStatus) {
         this.toDoItemDAO = toDoItemDAO;
         this.tableView = tableView;
         this.johnsonBrothersStatus = johnsonBrothersStatus;
         this.johnsonsCoffeeStatus = johnsonsCoffeeStatus;
-        this.urlString1 = urlString1;
-        this.urlString2 = urlString2;
         this.upImage = new Image(getClass().getResourceAsStream("/resources/upx.png"));
         this.downImage = new Image(getClass().getResourceAsStream("/resources/downx.png"));
+        this.statusHBox = new HBox(10); // Initialize statusHBox
+        this.websiteDAO = new WebsiteDAO(); // Initialize WebsiteDAO
+        loadWebsites(); // Load websites on startup
         startPingService();
+    }
+
+    private void loadWebsites() {
+        try {
+            List<Website> websites = websiteDAO.getAllWebsites();
+            for (Website website : websites) {
+                Label statusLabel = new Label();
+                checkWebsiteStatus(website, statusLabel);
+                statusHBox.getChildren().add(statusLabel);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public void openAddWindow() {
@@ -240,6 +256,64 @@ public class WindowManager {
         editStage.showAndWait();
     }
 
+    public void openAddWebsiteWindow() {
+        Stage addWebsiteStage = new Stage();
+        addWebsiteStage.initModality(Modality.APPLICATION_MODAL);
+        addWebsiteStage.setTitle("Add New Website");
+
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10));
+        grid.setVgap(10);
+        grid.setHgap(10);
+        grid.setAlignment(Pos.CENTER);
+
+        Label urlLabel = new Label("Website URL:");
+        TextField urlField = new TextField();
+        Label displayTextLabel = new Label("Display Text:");
+        TextField displayTextField = new TextField();
+        Button addButton = new Button("Add");
+        Button closeButton = new Button("Close");
+
+        addButton.setOnAction(e -> {
+            String url = urlField.getText();
+            String displayText = displayTextField.getText();
+            if (!url.isEmpty() && !displayText.isEmpty()) {
+                Website newWebsite = new Website(url, displayText);
+                Label newStatusLabel = new Label();
+                checkWebsiteStatus(newWebsite, newStatusLabel);
+                statusHBox.getChildren().add(newStatusLabel);
+                try {
+                    websiteDAO.addWebsite(newWebsite);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            addWebsiteStage.close();
+        });
+
+        closeButton.setOnAction(e -> addWebsiteStage.close());
+
+        grid.add(urlLabel, 0, 0);
+        grid.add(urlField, 1, 0);
+        grid.add(displayTextLabel, 0, 1);
+        grid.add(displayTextField, 1, 1);
+        grid.add(addButton, 2, 0);
+        grid.add(closeButton, 2, 1);
+
+        Scene scene = new Scene(grid, 400, 200);
+        addWebsiteStage.setScene(scene);
+        addWebsiteStage.showAndWait();
+    }
+
+    public VBox getStatusVBox() {
+        return statusVBox;
+    }
+
+    public HBox getStatusHBox() {
+        return statusHBox;
+    }
+
+
     public void openArchiveWindow() {
         Stage archiveStage = new Stage();
         archiveStage.setResizable(false);
@@ -401,35 +475,57 @@ public class WindowManager {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                checkWebsiteStatus(url1, johnsonBrothersStatus);
-                checkWebsiteStatus(url2, johnsonsCoffeeStatus);
+                checkWebsiteStatus(new Website(url1, "Johnson Brothers"), johnsonBrothersStatus);
+                checkWebsiteStatus(new Website(url2, "Johnsons Coffee"), johnsonsCoffeeStatus);
                 // Add other websites similarly
             }
         };
         timer.scheduleAtFixedRate(task, 0, 10000); // Ping every 10 seconds
     }
 
-    private void checkWebsiteStatus(String urlString, Label statusLabel) {
+    private void checkWebsiteStatus(Website website, Label statusLabel) {
         try {
-            URL url = new URL(urlString);
+            URL url = new URL(website.getUrl());
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             connection.setConnectTimeout(5000);
             connection.connect();
             int code = connection.getResponseCode();
             if (code == 200) {
-                updateStatusLabel(statusLabel, upImage);
+                updateStatusLabel(statusLabel, upImage, website);
             } else {
-                updateStatusLabel(statusLabel, downImage);
+                updateStatusLabel(statusLabel, downImage, website);
             }
         } catch (Exception e) {
-            updateStatusLabel(statusLabel, downImage);
+            updateStatusLabel(statusLabel, downImage, website);
         }
     }
 
-    private void updateStatusLabel(Label statusLabel, Image image) {
+    private void updateStatusLabel(Label statusLabel, Image image, Website website) {
         javafx.application.Platform.runLater(() -> {
-            statusLabel.setGraphic(new ImageView(image));
+            ImageView imageView = new ImageView(image);
+            imageView.setFitWidth(20);
+            imageView.setFitHeight(20);
+            Button button = new Button(website.getDisplayText(), imageView);
+            button.setOnAction(e -> {
+                try {
+                    java.awt.Desktop.getDesktop().browse(new java.net.URI(website.getUrl()));
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
+            Button deleteButton = new Button("X");
+            deleteButton.setOnAction(e -> {
+                statusHBox.getChildren().remove(statusLabel);
+                try {
+                    websiteDAO.deleteWebsite(website.getId());
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            });
+            HBox hBox = new HBox(5, button, deleteButton);
+            statusLabel.setGraphic(hBox);
+            statusLabel.setStyle("-fx-background-color: #ADD8E6; -fx-border-color: #000000; -fx-border-width: 2px; -fx-padding: 5px;");
         });
     }
 }

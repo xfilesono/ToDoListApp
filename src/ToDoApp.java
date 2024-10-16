@@ -23,14 +23,11 @@ public class ToDoApp extends Application {
     private WindowManager windowManager;
     private Label johnsonBrothersStatus = new Label("");
     private Label johnsonsCoffeeStatus = new Label("");
-    private Label urlString1 = new Label("Johnson Brothers");
-    private Label urlString2 = new Label("Johnsons Coffee");
-    // Add other status labels as needed
 
     @Override
     public void start(Stage primaryStage) {
         primaryStage.setTitle("TooDoo List");
-        windowManager = new WindowManager(toDoItemDAO, tableView, johnsonBrothersStatus, johnsonsCoffeeStatus, urlString1, urlString2);
+        windowManager = new WindowManager(toDoItemDAO, tableView, johnsonBrothersStatus, johnsonsCoffeeStatus);
 
         // Set up columns and data binding
         TableColumn<ToDoItem, Integer> idColumn = new TableColumn<>("ID");
@@ -132,6 +129,9 @@ public class ToDoApp extends Application {
         // Load unfinished tasks on startup
         refreshTableView();
 
+        Button addWebsiteButton = new Button("Add Website");
+        addWebsiteButton.setOnAction(e -> windowManager.openAddWebsiteWindow());
+
         Button addButton = new Button("Add");
         Button editButton = new Button("Edit");
         Button archiveButton = new Button("Archive");
@@ -160,7 +160,7 @@ public class ToDoApp extends Application {
         });
 
         // Style buttons and arrange them in a single line at the bottom
-        HBox buttonBox = new HBox(10, addButton, editButton, archiveButton);
+        HBox buttonBox = new HBox(10, addButton, editButton, archiveButton, addWebsiteButton);
         buttonBox.setAlignment(Pos.BOTTOM_CENTER);
         buttonBox.setPadding(new Insets(10));
         buttonBox.setStyle("-fx-font-family: 'Garamond'; -fx-font-size: 18px; -fx-background-color: #c6f3ef;");
@@ -168,21 +168,18 @@ public class ToDoApp extends Application {
         VBox vbox = new VBox(tableView);
         VBox.setVgrow(tableView, Priority.ALWAYS); // Make the table view grow to fill available space
 
-        // Add logo placeholder
+        // Add logo placeholder (existing code)
         Image logoImage = new Image(getClass().getResourceAsStream("/resources/3.png"));
         ImageView logoImageView = new ImageView(logoImage);
         logoImageView.setFitWidth(100);
         logoImageView.setPreserveRatio(true);
         logoImageView.setStyle("-fx-background-color: #ADD8E6;"); // Light blue background
 
-        // Add status labels beside the logo
-        urlString1.setStyle("-fx-font-family: 'Garamond'; -fx-color: #c6f3ef; -fx-font-size: 18px; fx-align: center;");
-        urlString2.setStyle("-fx-font-family: 'Garamond'; -fx-color: #c6f3ef; -fx-font-size: 18px; fx- align: center;");
-        HBox logoBox = new HBox(10, urlString1, johnsonBrothersStatus, logoImageView, urlString2, johnsonsCoffeeStatus); // Add other status labels
+        HBox logoBox = new HBox(10, johnsonBrothersStatus, logoImageView, johnsonsCoffeeStatus);
         logoBox.setAlignment(Pos.TOP_CENTER);
         logoBox.setPadding(new Insets(10));
 
-        VBox mainBox = new VBox(logoBox, vbox, buttonBox);
+        VBox mainBox = new VBox(logoBox, windowManager.getStatusHBox(), vbox, buttonBox); // Use the getter method
         Scene scene = new Scene(mainBox, 1200, 540);
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/resources/3b.png")));
         primaryStage.setScene(scene);
